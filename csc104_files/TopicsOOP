@@ -1,0 +1,20 @@
+Building GUI with AWT
+• Concepts of GUI and AW
+• Component and Container
+• Layout Manager
+• AWT Components
+• Customizing AWT Components
+
+##Handling AWT Events
+• AWT events
+• Action Listener
+• Event Listener Interface
+• Window Listener Interface
+• Event Source
+• Creating Customized Events
+
+##Excceptions and Stream
+• File Class
+• Character and Byte Stream
+• Input and  Output Stream
+• Stream Chaining
