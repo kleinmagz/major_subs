@@ -1,3 +1,4 @@
+import java.awt.Color;
 
 enum Player {
     X,
@@ -6,6 +7,8 @@ enum Player {
 
 public class Game {
     private GameFrame frame;
+    public Boolean isGameOver = false;
+    public Boolean isDraw = false;
 
     private Player currentTurn = Player.X;
     private Player[] gridState = new Player[9];
@@ -31,6 +34,9 @@ public class Game {
 
     void switchTurn() {
         this.currentTurn = (this.currentTurn == Player.X) ? Player.O : Player.X;
+    }
+    
+    void displayTurn() {
         this.frame.setFooterText(this.currentTurn + "'s turn!");
     }
 
@@ -49,11 +55,16 @@ public class Game {
                this.gridState[winningCombinations[i][1]] == currentTurn &&
                this.gridState[winningCombinations[i][2]] == currentTurn 
             ) {
-                this.frame.setFooterText(currentTurn + " wins!");
-                System.out.println(currentTurn + " wins!");
-            
+                this.frame.setCellColor(winningCombinations[i][0]);
+                this.frame.setCellColor(winningCombinations[i][1]);
+                this.frame.setCellColor(winningCombinations[i][2]);
+                this.isGameOver = true;
+                
+                return;
             }
         }
+
+        // checks if draw
         int count = 0;
         for(int i = 0; i < 9; i++) {
             if(this.gridState[i] != null)
@@ -61,9 +72,30 @@ public class Game {
         }
 
         if(count == 9) {
-            this.frame.setFooterText("Draw!");
-
+            this.isDraw = true;
         }
+    }
+
+    public void displayWinner() {
+        if(this.isGameOver){
+            this.frame.setFooterText(this.currentTurn + " wins!");
+            this.switchTurn();
+        }
+    }
+
+    public void displayDraw() {
+        this.frame.setFooterText("Draw!");
+    }
+
+    public void resetGame() {
+        for(int i = 0; i < 9; i++) {
+            this.frame.cells[i].setLabel("");
+            this.frame.cells[i].setBackground(Color.WHITE);
+            this.gridState[i] = null;
+        }
+        this.isGameOver = false;
+        this.isDraw = false;
+        this.frame.setFooterText(this.currentTurn + "'s turn!");
     }
 
     public void Exit() {

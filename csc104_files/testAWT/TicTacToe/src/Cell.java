@@ -9,6 +9,7 @@ public class Cell extends Button {
         this.setLabel(" ");
         this.addActionListener(new CellActionListener(this));
     }
+
 }
 
 class CellActionListener implements ActionListener {
@@ -20,10 +21,28 @@ class CellActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(App.game.MarkGrid(cell.index)) {
-            cell.setLabel(App.game.getCurrentTurn() == Player.X ? "X" : "O");
-            App.game.CheckWin();
-            App.game.switchTurn();
+        if(App.game.isGameOver || App.game.isDraw) {
+            App.game.resetGame();
+            return;
+        }
+        if(!App.game.isGameOver){
+            if(App.game.MarkGrid(cell.index)) {
+                cell.setLabel(App.game.getCurrentTurn() == Player.X ? "X" : "O");
+                App.game.CheckWin();
+                if (App.game.isGameOver) {
+                    App.game.displayWinner();
+                } 
+                else if (App.game.isDraw) {
+                    App.game.displayDraw();
+                }else {
+                    App.game.switchTurn();
+                    App.game.displayTurn();
+                }
+            }
+        } 
+        else {
+            cell.removeActionListener(this);
+            App.game.displayWinner();
         }
     }
 }

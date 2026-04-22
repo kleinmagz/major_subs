@@ -6,6 +6,7 @@ public class GameFrame extends Frame{
     private int frameHeight = 400;
     Cell[] cells = new Cell[9];
     Label footerText = new Label("X's turn!");
+    Panel footer = new Panel();
 
     public GameFrame(String title) {
         super(title);
@@ -23,7 +24,6 @@ public class GameFrame extends Frame{
 
         this.add(gridPanel, BorderLayout.CENTER);
 
-        Panel footer = new Panel();
         footer.setSize(400, 50);
         footer.setLayout(new FlowLayout());
         footer.add(footerText);
@@ -34,6 +34,10 @@ public class GameFrame extends Frame{
 
     public void setFooterText(String text) {
         this.footerText.setText(text);
+    }
+
+    public void setCellColor(int index) {
+        this.cells[index].setBackground(Color.GREEN);
     }
 
 }
