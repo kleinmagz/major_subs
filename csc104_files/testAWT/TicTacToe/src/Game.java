@@ -6,12 +6,12 @@ enum Player {
 }
 
 public class Game {
-    private GameFrame frame;
+    protected GameFrame frame;
     public Boolean isGameOver = false;
     public Boolean isDraw = false;
 
-    private Player currentTurn = Player.X;
-    private Player[] gridState = new Player[9];
+    protected Player currentTurn = Player.X;
+    protected Player[] gridState = new Player[9];
 
     static int[][] winningCombinations = {
         {0, 1, 2},
@@ -24,8 +24,8 @@ public class Game {
         {2, 4, 6}
     };
 
-    public Game(String title) {
-        this.frame = new GameFrame(title);
+    public Game() {
+        this.frame = new GameFrame("TicTacToe");
     }
 
     Player getCurrentTurn() {
@@ -55,11 +55,7 @@ public class Game {
                this.gridState[winningCombinations[i][1]] == currentTurn &&
                this.gridState[winningCombinations[i][2]] == currentTurn 
             ) {
-                this.frame.setCellColor(winningCombinations[i][0]);
-                this.frame.setCellColor(winningCombinations[i][1]);
-                this.frame.setCellColor(winningCombinations[i][2]);
                 this.isGameOver = true;
-                
                 return;
             }
         }
@@ -84,15 +80,12 @@ public class Game {
     }
 
     public void displayDraw() {
-        for(int i = 0; i < 9; i++)
-            this.frame.cells[i].setBackground(Color.ORANGE);
         this.frame.setFooterText("Draw!");
     }
 
     public void resetGame() {
         for(int i = 0; i < 9; i++) {
             this.frame.cells[i].setLabel("");
-            this.frame.cells[i].setBackground(Color.WHITE);
             this.gridState[i] = null;
         }
         this.isGameOver = false;
@@ -102,5 +95,57 @@ public class Game {
 
     public void Exit() {
         this.frame.dispose();
+    }
+}
+
+class GameWithColor extends Game {
+    public GameWithColor() {
+        super();
+    }
+
+    @Override
+    public void displayDraw() {
+        for(int i = 0; i < 9; i++)
+            this.frame.cells[i].setBackground(Color.ORANGE);
+        this.frame.setFooterText("Draw!");
+    }
+
+     @Override
+    public void CheckWin() {
+        for(int i = 0; i < winningCombinations.length; i++) {
+            if(this.gridState[winningCombinations[i][0]] == currentTurn &&
+               this.gridState[winningCombinations[i][1]] == currentTurn &&
+               this.gridState[winningCombinations[i][2]] == currentTurn 
+            ) {
+                this.frame.setCellColor(winningCombinations[i][0]);
+                this.frame.setCellColor(winningCombinations[i][1]);
+                this.frame.setCellColor(winningCombinations[i][2]);
+                this.isGameOver = true;
+                return;
+            }
+        }
+
+        // checks if draw
+        int count = 0;
+        for(int i = 0; i < 9; i++) {
+            if(this.gridState[i] != null)
+                count++;
+        }
+
+        if(count == 9) {
+            this.isDraw = true;
+        }
+    }
+
+    @Override
+    public void resetGame() {
+        for(int i = 0; i < 9; i++) {
+            this.frame.cells[i].setLabel("");
+            this.frame.cells[i].setBackground(Color.WHITE);
+            this.gridState[i] = null;
+        }
+        this.isGameOver = false;
+        this.isDraw = false;
+        this.frame.setFooterText(this.currentTurn + "'s turn!");
     }
 }

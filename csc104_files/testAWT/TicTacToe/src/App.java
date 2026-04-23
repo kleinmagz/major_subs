@@ -1,7 +1,7 @@
 
 
 public class App {
-    static Game game = new Game("TicTacToe");
+    static GameWithColor game = new GameWithColor();
     public static void main(String[] args) throws Exception {
     }
 }
