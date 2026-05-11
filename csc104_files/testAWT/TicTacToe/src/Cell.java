@@ -19,7 +19,7 @@ class CellActionListener implements ActionListener {
         this.cell = cell;
     }
 
-    @Override
+   
     public void actionPerformed(ActionEvent e) {
         if(App.game.isGameOver || App.game.isDraw) {
             App.game.resetGame();
@@ -28,7 +28,7 @@ class CellActionListener implements ActionListener {
         if(!App.game.isGameOver){
             if(App.game.MarkGrid(cell.index)) {
                 cell.setLabel(App.game.getCurrentTurn() == Player.X ? "X" : "O");
-                App.game.CheckWin();
+               App.game.CheckWin();
                 if (App.game.isGameOver) {
                     App.game.displayWinner();
                 } 

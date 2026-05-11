@@ -32,7 +32,11 @@ typedef struct QueueNode {
     struct QueueNode * next;
 } QueueNode;
 
-// For level order transversal
+// For level order traversal any other queue operations
+QueueNode * queue = NULL;
+Node * node = NULL;
+
+// For level order traversal
 QueueNode * createQueueNode(Node * node) {
     QueueNode * new = (QueueNode *)malloc(sizeof(QueueNode));
     if(new == NULL)
@@ -176,18 +180,16 @@ void postorder(Node * root) {
 }
 
 void levelOrder(Node * root, int nodeCount) {
-    QueueNode * queue = NULL;
-    Node * dequeuedNode = NULL;
     int * visitedNodes = (int *)calloc(nodeCount, sizeof(int));
     int i = 0; int j = 0;
     enqueue(&queue, root);
     while(queue != NULL) {
-        dequeuedNode = dequeue(&queue);
-        if(dequeuedNode == NULL)
+        node = dequeue(&queue);
+        if(node == NULL)
             continue;
-        visitedNodes[i] = dequeuedNode->data;
-        enqueue(&queue, dequeuedNode->left);
-        enqueue(&queue, dequeuedNode->right);
+        visitedNodes[i] = node->data;
+        enqueue(&queue, node->left);
+        enqueue(&queue, node->right);
         i++;
     }
     
@@ -292,84 +294,68 @@ void searchValue(Node * root) {
 }
 // nodes have 2 or 0 children
 int isStrictBST(Node * root) {
-    QueueNode * queue = NULL;
-    Node * node = NULL;
     enqueue(&queue, root);
     while(queue != NULL) {
         node = dequeue(&queue);
         if(node->left == NULL && node->right == NULL)
             continue;
-        if(node->left == NULL || node->right == NULL)
+        if(node->left == NULL || node->right == NULL) {
+            // dequeue any remaining QueueuNodes
+            while(queue != NULL) dequeue(&queue);
             return 0;
+        }
         enqueue(&queue, node->left);
         enqueue(&queue, node->right);
     }
+    // dequeue any remaining QueueuNodes
+    while(queue != NULL) dequeue(&queue);
     return 1;
 } 
 //every level is filled except possibly at the last level (must be left filled)
-int isCompleteBST(Node * root, int height) {
-    int totalNodes = (int)pow(2, height + 1) - 1;
-    QueueNode * queue = NULL;
-    Node * nullNode = createNode(-1);
-    Node * node = NULL;
-    int * visited = (int *)calloc(totalNodes, sizeof(int));
-    int i = 0;
-    enqueue(&queue, root);
-    while(queue != NULL) {
-        node = dequeue(&queue);
-        if(node == NULL)
-            continue;
-        visited[i++] = node->data;
-        if(node->left == NULL && node->right == NULL)
-            continue;
-        if(node->left == NULL)
-            enqueue(&queue, nullNode);
-        else
-            enqueue(&queue, node->left);
-        if(node->right == NULL)
-            enqueue(&queue, nullNode);
-        else
-            enqueue(&queue, node->right);
-    }
+int isCompleteBST(Node* root) {
+    if (root == NULL) return 1;
 
-    for(i = 0; i < totalNodes; i++) {
-        if(visited[i] < 0) {
-            free(visited);
-            return 0;
+    int foundNull = 0;
+    enqueue(&queue, root);
+
+    while (queue != NULL) {
+        Node* node = dequeue(&queue);
+
+        if (node->left != NULL) {
+            if (foundNull) { 
+                // dequeue any basta Hahhahaha
+                while (queue != NULL) dequeue(&queue); 
+                return 0; 
+            }
+            enqueue(&queue, node->left);
+        } else {
+            foundNull = 1;
+        }
+
+        if (node->right != NULL) {
+            if (foundNull) { 
+                // dequeue any remaining nodes in queue
+                while (queue != NULL) dequeue(&queue); 
+                return 0; 
+            }
+            enqueue(&queue, node->right);
+        } else {
+            foundNull = 1;
         }
     }
     return 1;
 }
 
-// everything is filled
-int isFullBST(Node * root, int height) {
-    if(!isStrictBST(root))
+int countNodes(Node* root) {
+    if (root == NULL) 
         return 0;
-    int totalNodes = (int)pow(2, height + 1) - 1;
-    QueueNode * queue = NULL;
-    Node * nullNode = createNode(-1);
-    Node * node = NULL;
-    int * visited = (int *)calloc(totalNodes, sizeof(int));
-    int i = 0;
-    enqueue(&queue, root);
-    while(queue != NULL) {
-        node = dequeue(&queue);
-        if(node == NULL)
-            continue;
-        visited[i++] = node->data;
-        if(node->left == NULL && node->right == NULL)
-            continue;
-        enqueue(&queue, node->left);
-        enqueue(&queue, node->right);
-    }
+    return 1 + countNodes(root->left) + countNodes(root->right);
+}
 
-    for(i = 0; i < totalNodes; i++) {
-        if(visited[i] == 0) {
-            free(visited);
-            return 0;
-        }
-    }
-    return 1;
+int isPerfectBST(Node* root, int height) {
+    int expectedNodes = (int)pow(2, height + 1) - 1;
+    int actualNodes = countNodes(root);
+    return actualNodes == expectedNodes;
 }
 
 
@@ -379,7 +365,7 @@ void treeType(Node * root, int height) {
 
     if(root) {
         printf("strict binary tree: \t\t%s\n", isStrictBST(root) ? CHECK : WRONG);
-        printf("complete binary tree: \t\t%s\n", isCompleteBST(root, height) ? CHECK : WRONG); 
+        printf("complete binary tree: \t\t%s\n", isCompleteBST(root) ? CHECK : WRONG); 
         printf("full binary tree: \t\t%s\n", isFullBST(root, height) ? CHECK : WRONG);
     }
     else {
@@ -486,9 +472,9 @@ void displayMenu(Node ** root) {
 
     while(isRunning) {
         clearScr();
-        displayTree(*root);
+        //displayTree(*root);
         printf("< MAIN MENU >\n\n");
-        printf("[1] Transversal Operations\n[2] Add Nodes\n[3] Search Value\n[4] Determine Tree Type\n[5] Display Leaves\n[6] Display Siblings\n[7] Exit\n");
+        printf("[1] Traversal Operations\n[2] Add Nodes\n[3] Search Value\n[4] Determine Tree Type\n[5] Display Leaves\n[6] Display Siblings\n[7] Exit\n");
         printf("Enter Option: ");
         scanf("%d", &choice);
 
@@ -513,6 +499,11 @@ void displayMenu(Node ** root) {
                 break;  
             case 7:
                 isRunning = 0;
+                break;
+            case 8:
+                printf("%d", getHeight(*root));
+                clearStdIn();
+                getchar();
                 break;
             default:
                 printf("Invalid input.\n");
