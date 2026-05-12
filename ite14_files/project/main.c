@@ -276,8 +276,23 @@ int search(Node * root, int target) {
     }
 }
 
+Node * getNode(Node * root, int target) {
+    if(root == NULL)
+        return NULL;
+    while(root != NULL) {
+        if(root->data == target)
+            return root;
+        if(target > root->data)
+            root = root->right;
+        if(target < root->data)
+            root = root->left;
+    }
+    return NULL;
+}
+
 void searchValue(Node * root) {
     int value;
+    Node * node = NULL;
     clearScr();
     printf("< SEARCH VALUE >\n\n");
     if(root == NULL) {
@@ -286,7 +301,9 @@ void searchValue(Node * root) {
     else {
         printf("Enter value: ");
         scanf("%d", &value);
+        node = getNode(root, value);
         printf("%d %s\n", value, (search(root, value)) ? "exists in the tree" : "does not exist in the tree");
+        printf("target: %d | level: %d\n", node->data, node->level);
     }
     clearStdIn();
     printf("\n\n[press any key to continue]\n");
@@ -352,7 +369,7 @@ int countNodes(Node* root) {
     return 1 + countNodes(root->left) + countNodes(root->right);
 }
 
-int isPerfectBST(Node* root, int height) {
+int isFullBST(Node* root, int height) {
     int expectedNodes = (int)pow(2, height + 1) - 1;
     int actualNodes = countNodes(root);
     return actualNodes == expectedNodes;
